@@ -1,0 +1,7 @@
+.expo
+.vscode
+./node_modules
+*.cpython-310.pyc
+*.csv
+*.xlsx
+*.parquet
