@@ -8,15 +8,16 @@ export default FoodSearch = () => {
     const navigation = useNavigation()
     const [searchResults, setSearchResults] = useState();
     const route = useRoute();
-    const { date } = route.params;
-    console.log(date)
+    const { selecteddate, iscreatemeal } = route.params;
+    const date = selecteddate
     const handleSearch = (results) => {
         setSearchResults(results)
 
     };
     const status = 0
+    const group = 1
     const navtodetail = (food) => {
-        navigation.navigate('FoodDetail', { food, status, date })
+        navigation.navigate('FoodDetail', { food, status, date, iscreatemeal, group })
     }
 
     return (

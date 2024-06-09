@@ -17,16 +17,11 @@ export default function Diary() {
     const [exercise, setExercise] = useState({});
     const navigation = useNavigation()
 
-
+    console.log("mealDiary", mealDiary)
     const handleDateChange = (newDate) => {
         setCurrentDate(moment(newDate).format('YYYY-MM-DD'));
-        console.log('Selected Date:', newDate);
     };
-    const sampleItems = [
-        { name: 'Apple', calories: 95 },
-        { name: 'Banana', calories: 105 },
 
-    ];
     const fetchMealDiary = async () => {
         const accessToken = await AsyncStorage.getItem('access_token');
         console.log(accessToken)
@@ -43,10 +38,11 @@ export default function Diary() {
                 setMealDiary(response.data.mealdiarys);
                 console.log(exercise)
             } else if (response.status == 404) {
+
                 setMealDiary({});
             }
         } catch (error) {
-
+            console.log(error)
             setMealDiary({});
         }
     };
@@ -68,7 +64,7 @@ export default function Diary() {
                 setExercise([]);
             }
         } catch (error) {
-            console.error(error);
+
             setExercise([]);
         }
     };
@@ -82,6 +78,8 @@ export default function Diary() {
 
     const getFirstFiveItems = (category) => {
         return mealDiary[category] ? mealDiary[category].slice(0, 5).map(item => ({
+            foodid: item.FoodId,
+            category: category,
             name: item.Name,
             calories: item.Calories,
             protein: item.Protein,

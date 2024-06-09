@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import HeaderAddExercise from '../../components/HeaderAddExercise';
-const AddExercise = ({ date }) => {
+import { useRoute } from '@react-navigation/native';
+const AddExercise = () => {
     const navigation = useNavigation()
     const [searchResults, setSearchResults] = useState();
     const handleSearch = (results) => {
@@ -11,9 +12,12 @@ const AddExercise = ({ date }) => {
         setSearchResults(results)
 
     };
+    const route = useRoute();
+    const { selecteddate } = route.params;
+    console.log("sat", selecteddate)
     const status = 0
     const navtodetail = (exercise) => {
-        navigation.navigate('ExerciseDetail', { exercise, status, date })
+        navigation.navigate('ExerciseDetail', { exercise, status, selecteddate })
     }
     return (
         <View style={styles.container}>
@@ -26,7 +30,7 @@ const AddExercise = ({ date }) => {
                                 <View key={index} style={styles.containeritem}>
                                     <TouchableOpacity style={styles.fooditem} onPress={() => navtodetail({
                                         "ExerciseId": result.ExerciseId, "Name": result.Name, "CaloriesPerHour": result.CaloriesPerHour
-                                    }, { date })} >
+                                    }, { selecteddate })} >
                                         <Text style={styles.name} >{result.Name}</Text>
                                         <Text style={styles.calories}>{result.CaloriesPerHour} kcal/hr</Text>
                                     </TouchableOpacity>

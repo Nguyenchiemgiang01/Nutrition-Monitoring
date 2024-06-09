@@ -11,6 +11,13 @@ import FoodDetail from '../../components/FoodDetail';
 import FoodSearch from '../../pages/FoodSearch/FoodSearch';
 import AddExercise from '../AddExercise/AddExercise';
 import ExerciseDetail from '../../components/ExerciseDetail';
+import More from '../More/More';
+import Food from '../Food/Food';
+import Account from '../Account/Account';
+import Profile from '../Profile/Profile';
+import Target from '../Target/Target';
+import CreateMeal from '../Meals/CreateMeal';
+import MealDetail from '../../components/MealDetail';
 const Stack = createNativeStackNavigator();
 
 export default function UserpageScreen() {
@@ -23,10 +30,18 @@ export default function UserpageScreen() {
             >
                 <Stack.Screen name="Home" component={HomeScreen} />
                 <Stack.Screen name="Diary" component={Diary} />
+                <Stack.Screen name="Food" component={Food} />
+                <Stack.Screen name="More" component={More} />
                 <Stack.Screen name="FoodDetail" component={FoodDetail} />
                 <Stack.Screen name='FoodSearch' component={FoodSearch} />
                 <Stack.Screen name='AddExercise' component={AddExercise} />
                 <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
+                <Stack.Screen name="Account" component={Account} />
+                <Stack.Screen name="Profile" component={Profile} />
+                <Stack.Screen name="Target" component={Target} />
+                <Stack.Screen style={styles.chart} name="CreateMeal" component={CreateMeal} />
+                <Stack.Screen name="MealDetail" component={MealDetail} />
+
             </Stack.Navigator>
             <Footer ></Footer >
         </View >

@@ -1,0 +1,23 @@
+{
+    "task":"rating",
+    "loss_type":"cross_entropy",
+    "embed_size":32,
+    "n_epochs":20,
+    "lr":0.0001,
+    "lr_decay":false,
+    "epsilon":1e-05,
+    "reg":null,
+    "batch_size":1024,
+    "sampler":"random",
+    "num_neg":1,
+    "use_bn":true,
+    "dropout_rate":null,
+    "hidden_units":[
+        128,
+        64,
+        32
+    ],
+    "seed":42,
+    "lower_upper_bound":null,
+    "tf_sess_config":null
+}

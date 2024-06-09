@@ -64,7 +64,9 @@ def create_new_consume(UserId, date):
 
 
 def get_a_consume(UserId, date):
-    a_consume = Consume.query.filter(and_(UserId=UserId, Date=date)).first()
+    a_consume = Consume.query.filter(
+        and_(Consume.UserId == UserId, Consume.Date == date)
+    ).first()
     return a_consume
 
 
@@ -74,6 +76,7 @@ def get_all_consume(UserId):
 
 
 def get_stage_consume(UserId, datefrom, dateto):
+    print(datefrom)
     consumes = Consume.query.filter(
         and_(Consume.UserId == UserId, Consume.Date.between(datefrom, dateto))
     ).all()

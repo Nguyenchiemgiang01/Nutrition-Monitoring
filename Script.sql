@@ -75,14 +75,14 @@ use  nutrition_monitoring;
 -- Foreign key (FoodId) references Food(FoodId)
 -- );
 
-Create table Meal_Diary(
-DiaryId Int Auto_increment Primary key,
-UserId Varchar(50),
-Date Date,
-Type Varchar(20),
-ConsumeId Int,
-Foreign key (UserId) references User(UserId)
-);
+-- Create table Meal_Diary(
+-- DiaryId Int Auto_increment Primary key,
+-- UserId Varchar(50),
+-- Date Date,
+-- Type Varchar(20),
+-- ConsumeId Int,
+-- Foreign key (UserId) references User(UserId)
+-- );
 
 Create table Food_In_Meal(
 FiMId Int Auto_increment Primary key,

@@ -46,15 +46,18 @@ const HeaderDiary = ({ onDateChange }) => {
         setModalVisible(true);
     }
     const handleAddFood = () => {
+        const iscreatemeal = 0
         setModalVisible(false);
-        // console.log("date:", selectedDate)
-        navigation.navigate('FoodSearch', { date: selectedDate.toISOString() })
+        const selecteddate = selectedDate.toISOString()
+        console.log("selectday", selectedDate)
+        navigation.navigate('FoodSearch', { selecteddate, iscreatemeal })
 
 
     }
     const handleAddExercise = () => {
         setModalVisible(false);
-        navigation.navigate('AddExercise', { date: selectedDate.toISOString() });
+        const selecteddate = selectedDate.toISOString()
+        navigation.navigate('AddExercise', { selecteddate });
     }
     const iconName = iscomplete ? 'chevron-down-circle' : 'chevron-down-circle-outline';
     return (

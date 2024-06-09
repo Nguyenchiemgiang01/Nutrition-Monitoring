@@ -20,6 +20,17 @@ class User(db.Model):
         onupdate=db.func.current_timestamp(),
     )
 
+    def to_dict(self):
+        return {
+            "UserId": self.UserId,
+            "Username": self.Username,
+            "Email": self.Email,
+            "Name": self.Name,
+            "Type": self.Type,
+            "CreateAt": self.CreateAt.strftime("%Y-%m-%d %H:%M:%S"),
+            "UpdateAt": self.UpdateAt.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+
 
 # Model cho bảng Exercise
 class Exercise(db.Model):
@@ -68,15 +79,15 @@ class Consume(db.Model):
     ConsumeId = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserId = db.Column(db.String(50), db.ForeignKey("User.UserId"))
     Date = db.Column(db.Date)
-    Calories = db.Column(db.Float)
-    Fat = db.Column(db.Float)
-    Cholesterol = db.Column(db.Float)
-    Sodium = db.Column(db.Float)
-    Carbohydrate = db.Column(db.Float)
-    Fiber = db.Column(db.Float)
-    Sugar = db.Column(db.Float)
-    Protein = db.Column(db.Float)
-    Water = db.Column(db.Float)
+    Calories = db.Column(db.Float, default=0.0)
+    Fat = db.Column(db.Float, default=0.0)
+    Cholesterol = db.Column(db.Float, default=0.0)
+    Sodium = db.Column(db.Float, default=0.0)
+    Carbohydrate = db.Column(db.Float, default=0.0)
+    Fiber = db.Column(db.Float, default=0.0)
+    Sugar = db.Column(db.Float, default=0.0)
+    Protein = db.Column(db.Float, default=0.0)
+    Water = db.Column(db.Float, default=0.0)
 
     user = db.relationship("User", backref="consumes")
 
@@ -95,7 +106,6 @@ class Consume(db.Model):
             "Sugar": self.Sugar,
             "Protein": self.Protein,
             "Water": self.Water,
-            "DoExerciseId": self.DoExerciseId,
         }
         return consume_dict
 
@@ -110,8 +120,21 @@ class PersonalInformation(db.Model):
     Weight = db.Column(db.Float)
     Gender = db.Column(db.String(10))
     Disease = db.Column(db.String(100))
+    CaloriesGoal = db.Column(db.Float)
 
     user = db.relationship("User", backref="personal_info")
+
+    def to_dict(self):
+        return {
+            "PerId": self.PerId,
+            "UserId": self.UserId,
+            "Age": self.Age,
+            "Height": self.Height,
+            "Weight": self.Weight,
+            "Gender": self.Gender,
+            "Disease": self.Disease,
+            "CaloriesGoal": self.CaloriesGoal,
+        }
 
 
 # Model cho bảng Food
@@ -223,6 +246,16 @@ class PersonalMeal(db.Model):
 
     user = db.relationship("User", backref="personal_meals")
 
+    def to_dict(self):
+        return {
+            "PerMealId": self.PerMealId,
+            "UserId": self.UserId,
+            "Name": self.Name,
+            "IsPublic": self.IsPublic,
+            "CreateAt": self.CreateAt.strftime("%d-%m-%Y") if self.CreateAt else None,
+            "UpdateAt": self.UpdateAt.strftime("%d-%m-%Y") if self.UpdateAt else None,
+        }
+
 
 # Model cho bảng Food_In_PerMeal
 class FoodInPerMeal(db.Model):
@@ -233,6 +266,17 @@ class FoodInPerMeal(db.Model):
 
     personal_meal = db.relationship("PersonalMeal", backref="food_in_per_meals")
     food = db.relationship("Food", backref="food_in_per_meals")
+
+    def to_dict(self):
+        return {
+            "FPId": self.FPId,
+            "PerMealId": self.PerMealId,
+            "FoodId": self.FoodId,
+            "personal_meal": (
+                self.personal_meal.to_dict() if self.personal_meal else None
+            ),
+            "food": self.food.to_dict() if self.food else None,
+        }
 
 
 # Model cho bảng Review

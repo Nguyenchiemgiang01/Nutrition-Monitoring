@@ -6,7 +6,8 @@ export const signUp = async (userData) => {
     try {
         const response = await axios.post(config.BASE_URL + '/signup', userData);
         if (response.status == 200) {
-            return response.data.success;
+            console.log(response.data)
+            return response.data;
         }
         else {
             console.log(response)

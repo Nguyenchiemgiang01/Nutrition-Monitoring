@@ -5,9 +5,6 @@ import { AddExerciseReq } from '../pages/AddExercise/AddExerciseReq';
 const HeaderAddExercise = ({ onClose, onResults }) => {
     const [searchText, setSearchText] = useState('')
     const [results, setResults] = useState([]);
-    // const handlechangeSearch = (text) => {
-    //     setSearchText(text);
-    // }
     const handleSearch = async () => {
         if (searchText) {
             console.log(searchText)
@@ -28,29 +25,6 @@ const HeaderAddExercise = ({ onClose, onResults }) => {
 
         }
     };
-    // const DATA = [
-    //     {
-    //         id: '1',
-    //         title: 'All',
-    //     },
-    //     {
-    //         id: '2',
-    //         title: 'Favorites',
-    //     },
-    // ];
-    // // const [selectedItem, setSelectedItem] = useState('1');
-    // const Item = ({ title, id }) => {
-    //     return (
-    //         <TouchableOpacity
-    //             style={[styles.item, {
-    //                 backgroundColor: selectedItem === id ? '#003319' : '#EBF2F9',
-    //             }]}
-    //             onPress={() => setSelectedItem(id)}
-    //         >
-    //             <Text style={[styles.tabtext, { color: selectedItem === id ? '#fff' : '#000' }]}>{title}</Text>
-    //         </TouchableOpacity>
-    //     );
-    // };
     return (
         <View style={styles.container}>
             <View style={styles.topHeader}>

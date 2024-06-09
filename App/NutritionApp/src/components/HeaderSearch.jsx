@@ -13,7 +13,6 @@ const HeaderSearch = ({ onClose, onResults }) => {
         if (searchText) {
             const foodsearch = await FoodSearchReq(searchText);
             if (foodsearch) {
-                // console.log(foodsearch)
                 setResults(foodsearch)
                 onResults(foodsearch)
             }
@@ -21,13 +20,6 @@ const HeaderSearch = ({ onClose, onResults }) => {
                 setResults([])
                 onResults(results)
             }
-            // if (results) {
-            //     onResults(results["_j"])
-            // }
-            // else {
-            //     setResults([])
-            //     onResults(results)
-            // }
 
         } else {
             setResults([]);

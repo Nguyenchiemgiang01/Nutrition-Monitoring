@@ -9,7 +9,9 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../config';
 const FoodDetail = ({ route, navigation }) => {
-    const { food, status, date } = route.params;
+    console.log("route", route)
+    const { food, status, date, iscreatemeal, group } = route.params;
+    console.log("food", food, date, group)
     const a = String(food.calories)
     const [size, setSize] = useState('')
     const [selectedMeal, setSelectedMeal] = useState('');
@@ -21,21 +23,26 @@ const FoodDetail = ({ route, navigation }) => {
         { label: 'Dinner', value: 'dinner' }
     ];
     const DATA = [
-        { key: 'Protein', value: food.protein + 'g' },
-        { key: 'Carbs', value: food.carbs + 'g' },
-        { key: 'Fat', value: food.fat + 'g' },
-        { key: 'Sodium', value: food.sodium + 'g' },
-        { key: 'Fiber', value: food.fiber + 'g' },
-        { key: 'Sugar', value: food.sugar + 'mg' },
-        { key: 'Cholesterol', value: food.cholesterol + 'mg' },
+        { key: 'Protein', value: food.protein || food.ProteinContent || food.Protein + ' g' },
+        { key: 'Carbs', value: food.carbs || food.CarbohydrateContent || food.Carbohydrate + ' g' },
+        { key: 'Fat', value: food.fat || food.FatContent || food.Fat + ' g' },
+        { key: 'Sodium', value: food.sodium || food.SodiumContent || food.Sodium + ' g' },
+        { key: 'Fiber', value: food.fiber || food.FiberContent || food.Fiber + ' g' },
+        { key: 'Sugar', value: food.sugar || food.SugarContent || food.Sugar + ' mg' },
+        { key: 'Cholesterol', value: food.cholesterol || food.CholesterolContent || food.Cholesterol + ' mg' },
 
     ];
-    const handleSave = () => {
-        // Implement the save functionality here
+    const handleAddMeal = () => {
+        const foodids = food.foodid
+        const foodname = food.name
+        const foodcalories = food.calories
+        navigation.navigate("CreateMeal", { foodids, foodname, foodcalories })
     };
 
 
+    const handleSave = () => {
 
+    }
 
     const handleAdd = async () => {
         const accessToken = await AsyncStorage.getItem('access_token');
@@ -47,7 +54,7 @@ const FoodDetail = ({ route, navigation }) => {
             const response = await axios.post(config.BASE_URL + '/mealdiary', {
                 Date: moment(date).format('YYYY-MM-DD'),
                 Type: selectedMeal,
-                foodid: food.foodid,
+                foodid: food.foodid || food.RecipeId || food.FoodId,
                 // servingsize: size
             }, { headers });
             if (response.status == 201) {
@@ -61,12 +68,32 @@ const FoodDetail = ({ route, navigation }) => {
 
         }
     };
-    const handleRemove = () => {
-        // Implement the add functionality here
+    const handleRemove = async () => {
+        const accessToken = await AsyncStorage.getItem('access_token');
+        const headers = {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        };
+        try {
+            const response = await axios.delete(config.BASE_URL + '/mealdiary', {
+                data: {
+                    Date: moment(date).format('YYYY-MM-DD'),
+                    Type: food.category,
+                    foodid: food.foodid || food.RecipeId || food.FoodId,
+                },
+                headers: headers
+            });
+            if (response.status == 200) {
+                Alert.alert('', response.data.message);
+                navigation.goBack();
+            }
+        } catch (error) {
+            console.error('Error removing food from meal diary:', error);
+        }
     };
     return (
         <View style={styles.container}>
-            <HeaderFoodDetail foodName={food.name} onClose={() => navigation.goBack()}></HeaderFoodDetail>
+            <HeaderFoodDetail foodName={food.name || food.Name} onClose={() => navigation.goBack()}></HeaderFoodDetail>
             <ScrollView>
                 <View style={styles.content}>
                     <View style={styles.headcontent}>
@@ -75,28 +102,29 @@ const FoodDetail = ({ route, navigation }) => {
                             <TextInput style={styles.value} value={size} onChangeText={(text) => setSize(text)}
                                 editable={true}></TextInput>
                         </View> */}
-                        <View style={styles.infoitem}>
-                            <Text style={styles.title}>Group</Text>
-                            <CustomPicker
-                                options={mealOptions}
-                                selectedValue={selectedMeal}
-                                onValueChange={(value) => setSelectedMeal(value)}
-                            />
-                        </View>
+                        {iscreatemeal === 0 && group == 1 ? (
+                            <View style={styles.infoitem}>
+                                <Text style={styles.title}>Group</Text>
+                                <CustomPicker
+                                    options={mealOptions}
+                                    selectedValue={selectedMeal}
+                                    onValueChange={(value) => setSelectedMeal(value)}
+                                />
+                            </View>
+                        ) : (<View></View>)}
+
+
 
                     </View>
                     <View style={styles.sumary}>
-                        <Summary protein={food.protein} netCarbs={food.carbs} fat={food.fat}></Summary>
+                        <Summary protein={food.protein || food.ProteinContent || food.Protein} netCarbs={food.carbs || food.CarbohydrateContent || food.Carbohydrate} fat={food.fat || food.FatContent || food.Fat}></Summary>
                     </View>
                     <View style={styles.detail}>
                         <ParamDetail data={DATA}></ParamDetail>
                     </View>
-                    <View style={styles.buttonbottom}>
+                    {iscreatemeal === 0 ? (<View style={styles.buttonbottom}>
                         {status === 1 ? (
                             <View style={styles.added}>
-                                <TouchableOpacity style={styles.button} onPress={handleSave}>
-                                    <Text style={styles.buttonText}>Save</Text>
-                                </TouchableOpacity>
                                 <TouchableOpacity style={styles.remove} onPress={handleRemove}>
                                     <Text style={styles.removeText}>Remove from diary</Text>
                                 </TouchableOpacity>
@@ -107,7 +135,12 @@ const FoodDetail = ({ route, navigation }) => {
                                 <Text style={styles.buttonText}>Add to Diary</Text>
                             </TouchableOpacity>
                         )}
-                    </View>
+                    </View>) : (
+                        <TouchableOpacity style={styles.button} onPress={handleAddMeal}>
+                            <Text style={styles.buttonText}>Add to your meal</Text>
+                        </TouchableOpacity>
+                    )}
+
 
                 </View>
             </ScrollView>

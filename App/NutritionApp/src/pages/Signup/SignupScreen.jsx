@@ -8,6 +8,7 @@ import style from "./signupstyle"
 import { validate } from "./validateconfigsignup";
 import { useNavigation } from "@react-navigation/native";
 import { signUp } from './SignupReq'
+import PersonalInfo from "../PersonalInfor/PersonalInfo";
 const Sign = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showconfirmPassword, setShowconfirmPassword] = useState(false);
@@ -21,6 +22,7 @@ const Sign = () => {
   const [usernameError, setUsernameError] = useState('');
   const [fullnameError, setFullnameError] = useState('');
   const [confirmpasswordError, setconfirmPasswordError] = useState('');
+  // const [dataccount, setDataccount] = useState();
   const navigation = useNavigation();
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -65,10 +67,12 @@ const Sign = () => {
 
     if (emailError == '' & passwordError == '' & usernameError == '' & fullnameError == '' & confirmpasswordError == '') {
       try {
-        const userData = { 'fullname': username, 'password': password, 'email': email, 'fullname': fullname };
-        const response = await signUp(userData);
-        Alert.alert('', response)
-        navigation.navigate('Login')
+        const userData = { 'username': username, 'password': password, 'email': email, 'fullname': fullname };
+        // const response = await signUp(userData);
+        // const user = response.user;
+        // Alert.alert('', response.message)
+        // console.log(response)
+        navigation.navigate('PersonalInfo', { userData })
       } catch (error) {
         console.log(error.message);
       }

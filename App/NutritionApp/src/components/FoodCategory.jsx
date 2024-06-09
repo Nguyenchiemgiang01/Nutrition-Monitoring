@@ -5,9 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FoodItem from './FoodItem';
 import { useNavigation } from '@react-navigation/native';
 const FoodCategory = ({ categoryName, items, date }) => {
-
+    console.log("dateca", date)
     const [expanded, setExpanded] = useState(false);
-
     const status = 1
     const navigation = useNavigation()
     const toggleExpand = () => {
@@ -15,11 +14,12 @@ const FoodCategory = ({ categoryName, items, date }) => {
     };
     const handleadd = () => {
         // setModalVisible(true);
-        navigation.navigate('FoodSearch', { date })
+        const iscreatemeal = 0
+        navigation.navigate('FoodSearch', { date, iscreatemeal })
 
     }
 
-
+    console.log("items", items)
     return (
 
         <View style={styles.container}>
@@ -30,31 +30,6 @@ const FoodCategory = ({ categoryName, items, date }) => {
                     </TouchableOpacity>
                     <Text style={styles.categoryName}>{categoryName}</Text>
                 </View>
-                {/* <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        setModalVisible(false);
-                    }}
-                >
-                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                        <View style={styles.modalContainer}>
-                            <TouchableWithoutFeedback>
-                                <View style={styles.modalContent}>
-                                    <TouchableOpacity style={styles.modalButton} onPress={handleAddFood}>
-                                        <Ionicons name="logo-apple" size={30} color={'#FF3333'}></Ionicons>
-                                        <Text style={styles.modalButtonText}>Add Food</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.modalButton} onPress={handleAddExercise}>
-                                        <Ionicons name="accessibility" size={30} color={'#00CCCC'}></Ionicons>
-                                        <Text style={styles.modalButtonText}>Add Exercise</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </Modal> */}
                 <TouchableOpacity onPress={toggleExpand} style={styles.iconButton}>
                     <Ionicons name={expanded ? 'chevron-up-outline' : 'chevron-down-outline'} size={24} color="#000" />
                 </TouchableOpacity>
@@ -63,7 +38,7 @@ const FoodCategory = ({ categoryName, items, date }) => {
                 <View style={styles.itemsContainer}>
                     {items.map((item, index) => (
                         <View key={index}>
-                            <FoodItem items={item} status={status} />
+                            <FoodItem items={item} status={status} iscreatemeal={0} date={date} group={0} />
                         </View>
                     ))}
                 </View>

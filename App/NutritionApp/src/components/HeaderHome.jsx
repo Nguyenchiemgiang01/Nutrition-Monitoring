@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, StyleSheet, Text, Image, FlatList, SafeAreaView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import { useNavigation } from '@react-navigation/native';
 
 const HeaderHome = () => {
+    const navigation = useNavigation()
     const DATA = [
         {
             id: '1',
@@ -19,19 +20,23 @@ const HeaderHome = () => {
         },
         {
             id: '4',
-            title: 'Third Item',
+            title: 'Meals',
         },
     ];
 
     const [selectedItem, setSelectedItem] = useState('1');
 
+    const handlepress = (id, title) => {
+        setSelectedItem(id)
+        navigation.navigate(title)
+    }
     const Item = ({ title, id }) => {
         return (
             <TouchableOpacity
                 style={[styles.item, {
                     backgroundColor: selectedItem === id ? '#003319' : '#EBF2F9',
                 }]}
-                onPress={() => setSelectedItem(id)}
+                onPress={() => handlepress(id, title)}
             >
                 <Text style={[styles.tabtext, { color: selectedItem === id ? '#fff' : '#000' }]}>{title}</Text>
             </TouchableOpacity>

@@ -9,18 +9,19 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../config';
 const ExerciseDetail = ({ route, navigation }) => {
-    const { exercise, date, status } = route.params;
+    const { exercise, status, selecteddate } = route.params;
     const mins = exercise.Time
 
     const [time, setTime] = useState('')
 
-    console.log(time)
+
 
     const [selectedMeal, setSelectedMeal] = useState('');
     useEffect(() => {
         if (exercise.Time) {
             setTime(exercise.Time.toString());
         }
+        console.log("date", selecteddate)
     }, [exercise]);
 
     const DATA = [
@@ -41,7 +42,7 @@ const ExerciseDetail = ({ route, navigation }) => {
         };
         try {
             const response = await axios.post(config.BASE_URL + '/exercise', {
-                Date: moment(date).format('YYYY-MM-DD'),
+                Date: moment(selecteddate).format('YYYY-MM-DD'),
                 Time: time,
                 ExerciseId: exercise.ExerciseId,
             }, { headers });

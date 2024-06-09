@@ -2,19 +2,18 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const FoodItem = ({ items, status }) => {
+const FoodItem = ({ items, status, iscreatemeal, date, group }) => {
     const navigation = useNavigation()
-
+    console.log("iscreatemeal", iscreatemeal, status, group)
     const navtodetail = (food) => {
-
-        navigation.navigate('FoodDetail', { food, status })
+        navigation.navigate('FoodDetail', { food, status, iscreatemeal, date, group })
     }
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.fooditem} onPress={() => navtodetail(items)}>
                 <View style={styles.item}>
-                    <Text style={styles.name} >{items.name}</Text>
-                    <Text style={styles.calories}>{items.calories} kcal</Text>
+                    <Text style={styles.name} >{items.name || items.Name}</Text>
+                    <Text style={styles.calories}>{items.calories || items.Calories} kcal</Text>
                 </View>
             </TouchableOpacity>
 
@@ -34,6 +33,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     name: {
+        width: 200,
         fontSize: 16,
         alignItems: 'center',
 
