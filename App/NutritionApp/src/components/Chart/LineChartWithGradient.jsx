@@ -49,7 +49,7 @@ const LineChartWithGradient = ({ data, spacing = 10 }) => {
             <Text style={styles.title}>Calories  (kcals)</Text>
             <LineChart
                 data={lineData}
-                spacing={40}
+                spacing={30}
                 barWidth={10}
                 hideDataPoints
                 lineGradient
@@ -64,6 +64,7 @@ const LineChartWithGradient = ({ data, spacing = 10 }) => {
                     );
                 }}
             />
+            <Text style={styles.xAxisLabel}>Day</Text>
             <View style={styles.daterange}>
                 <Text style={styles.datetext}>From  {dateFrom30}   -   To  {dateTo}</Text>
             </View>
@@ -71,15 +72,10 @@ const LineChartWithGradient = ({ data, spacing = 10 }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 16,
-    },
     title: {
         marginBottom: 20,
         fontSize: 18,
         fontWeight: 'bold',
-
-
     },
     daterange: {
         marginTop: 10,
@@ -88,6 +84,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontStyle: 'italic',
         color: '#003300'
+    },
+    xAxisLabel: {
+        position: 'absolute',
+        marginLeft: 306,
+        marginTop: 280,
+        fontSize: 16,
+        color: '#808080',
     }
 
 });

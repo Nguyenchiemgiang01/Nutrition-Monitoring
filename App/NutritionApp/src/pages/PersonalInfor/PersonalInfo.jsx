@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import config from '../../../config';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute } from '@react-navigation/native';
 import { signUp } from '../Signup/SignupReq';
@@ -20,8 +17,50 @@ const PersonalInfo = ({ navigation }) => {
     const username = userData.username;
     const fullname = userData.fullname;
     const password = userData.password
-    // const userid = user.UserId
-    // console.log(userid)
+
+    const diseasesss = [
+        "Coeliac disease",
+        "Hypothyroidism",
+        "Hyperthyroidism",
+        "Diabetes insipidus",
+        "Frozen Shoulder",
+        "Trigger Finger",
+        "Haemochromatosis",
+        "Acute Pancreatitis",
+        "Chronic Pancreatitis",
+        "Nausea and vomiting",
+        "Migraine",
+        "Mononucleosis",
+        "Stomach aches",
+        "Conjunctivitis",
+        "Dry Mouth",
+        "Acne",
+        "Malnutrition",
+        "Diabetes",
+        "Kidney Infection",
+        "Obstructive Sleep Apnea",
+        "Thyroid",
+        "Scleroderma",
+        "Acromegaly",
+        "Phoechromocytoma",
+        "Lupus",
+        "Cushing Syndrome",
+        "Hypertension",
+        "Type 2 Diabetes",
+        "High blood pressure",
+        "Heart Disease",
+        "Stroke",
+        "Sleep apnea",
+        "Metabolic syndrome",
+        "Fatty liver disease",
+        "Osteoarthritis",
+        "Gallbladder diseases",
+        "Kidney Diseases",
+        "Measles",
+        "Mouth Ulcer",
+        "Sore Throat",
+        "Yellow Fever"
+    ];
     const validateForm = () => {
         let valid = true;
         let errors = {};
@@ -57,7 +96,6 @@ const PersonalInfo = ({ navigation }) => {
         }
 
         const data = {
-
             email,
             username,
             fullname,
@@ -133,11 +171,17 @@ const PersonalInfo = ({ navigation }) => {
             {errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
 
             <Text style={styles.label}>Disease</Text>
-            <TextInput
-                style={styles.input}
-                value={disease}
-                onChangeText={setDisease}
-            />
+            <View style={styles.pickerContainer}>
+                <Picker
+                    selectedValue={disease}
+                    onValueChange={(itemValue) => setDisease(itemValue)}
+                >
+                    <Picker.Item key={-1} label="No disease" value="" />
+                    {diseasesss.map((disease, index) => (
+                        <Picker.Item key={index} label={disease} value={disease} />
+                    ))}
+                </Picker>
+            </View>
             {errors.disease && <Text style={styles.error}>{errors.disease}</Text>}
 
             <View style={styles.btn} >

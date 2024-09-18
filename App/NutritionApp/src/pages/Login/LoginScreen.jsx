@@ -8,6 +8,7 @@ import { validate } from "./validateconfig"
 import { loginRequest } from "./LoginReq";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ResetPasswordPopup from "../../components/Popup/ResetPasswordPopup";
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,8 +45,11 @@ const LoginScreen = () => {
     else {
       console.log('error')
     }
+  }
+  const [isModalVisible, setModalVisible] = useState(false);
 
-
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
   return (
     <View style={styles.container}>
@@ -60,7 +64,7 @@ const LoginScreen = () => {
         <Text style={styles.helloText}>Welcome!</Text>
         <Text style={styles.signInText}>Sign into your account!</Text>
       </View>
-      <SafeAreaView style={styles.arealogin}>
+      <View style={styles.arealogin}>
         <View style={styles.inputlogin}>
           <View style={styles.groupinput}>
             <FontAwesomeIcon icon={faEnvelope} style={styles.icon} size={30} />
@@ -98,8 +102,14 @@ const LoginScreen = () => {
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
+          <Text style={styles.textforget} onPress={toggleModal}> Forget password !</Text>
         </View>
-      </SafeAreaView>
+        <View>
+          <ResetPasswordPopup isVisible={isModalVisible} onClose={toggleModal} />
+        </View>
+
+
+      </View>
       <View style={styles.createAccountText}>
         <Text style={styles.textBottom}>Don't have an account !
           <Text style={styles.create} onPress={() => navigation.navigate('Signup')}> Create</Text>

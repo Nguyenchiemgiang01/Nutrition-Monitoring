@@ -15,16 +15,36 @@ export default function Diary() {
     const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD'));
     const [mealDiary, setMealDiary] = useState({});
     const [exercise, setExercise] = useState({});
+    const [consumecalories, setConsumeCalories] = useState(0);
+    const [goal, setGoal] = useState(1);
+    const [percentage, setPercentag] = useState(1);
     const navigation = useNavigation()
-
-    console.log("mealDiary", mealDiary)
     const handleDateChange = (newDate) => {
         setCurrentDate(moment(newDate).format('YYYY-MM-DD'));
+
     };
+    const getInfo = async () => {
+        const accessToken = await AsyncStorage.getItem('access_token');
+        const headers = {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        };
+
+        try {
+            const response = await axios.get(`${config.BASE_URL}/user/profile`, {
+                headers: headers
+            });
+
+            setGoal(response.data.personal_info.caloriesgoal)
+        } catch (error) {
+            console.error('Error fetching info data:', error);
+
+        }
+    }
 
     const fetchMealDiary = async () => {
+        console.log("currentDate", currentDate)
         const accessToken = await AsyncStorage.getItem('access_token');
-        console.log(accessToken)
         if (!accessToken) {
             return;
         }
@@ -36,13 +56,12 @@ export default function Diary() {
             });
             if (response.status == 201) {
                 setMealDiary(response.data.mealdiarys);
-                console.log(exercise)
             } else if (response.status == 404) {
 
                 setMealDiary({});
             }
         } catch (error) {
-            console.log(error)
+            console.log("error", error)
             setMealDiary({});
         }
     };
@@ -69,11 +88,40 @@ export default function Diary() {
         }
     };
 
+    const fetchConsume = async () => {
+        const accessToken = await AsyncStorage.getItem('access_token');
+        if (!accessToken) {
+            return;
+        }
+        try {
+            const response = await axios.get(config.BASE_URL + `/consume/${currentDate}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            if (response.status === 200) {
+                setConsumeCalories(response.data.a_consume.Calories);
+            } else if (response.status === 404) {
+                setConsumeCalories(0);
+            }
+        } catch (error) {
+            setConsumeCalories(0);
+        }
+    };
+    getInfo();
+    useEffect(() => {
+        fetchMealDiary();
+        fetchExercise();
+        fetchConsume();
+
+    }, [currentDate]);
 
     useEffect(() => {
-        fetchMealDiary(currentDate);
-        fetchExercise(currentDate)
-    }, [currentDate]);
+        setPercentag((consumecalories * 100 / goal).toFixed(1));
+    }, [consumecalories]);
+
+
+
 
 
     const getFirstFiveItems = (category) => {
@@ -98,7 +146,7 @@ export default function Diary() {
             <ScrollView style={styles.content}>
                 <View style={styles.target}>
                     <Text style={styles.texttarget}> Target</Text>
-                    <ProgressBar percentage={60} />
+                    <ProgressBar percentage={percentage} />
                 </View>
 
                 <View style={styles.categories}>

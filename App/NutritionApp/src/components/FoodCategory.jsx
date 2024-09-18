@@ -5,21 +5,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FoodItem from './FoodItem';
 import { useNavigation } from '@react-navigation/native';
 const FoodCategory = ({ categoryName, items, date }) => {
-    console.log("dateca", date)
     const [expanded, setExpanded] = useState(false);
     const status = 1
     const navigation = useNavigation()
+
     const toggleExpand = () => {
         setExpanded(!expanded);
     };
     const handleadd = () => {
         // setModalVisible(true);
+        let selecteddate = date
         const iscreatemeal = 0
-        navigation.navigate('FoodSearch', { date, iscreatemeal })
+        navigation.navigate('FoodSearch', { selecteddate, iscreatemeal })
 
     }
-
-    console.log("items", items)
     return (
 
         <View style={styles.container}>

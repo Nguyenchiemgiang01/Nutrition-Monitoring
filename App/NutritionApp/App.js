@@ -7,6 +7,7 @@ import LoginScreen from "./src/pages/Login/LoginScreen";
 import SignupScreen from "./src/pages/Signup/SignupScreen";
 import PersonalInfo from "./src/pages/PersonalInfor/PersonalInfo";
 import UserpageScreen from "./src/pages/Userpage/UserpageScreen";
+import EnterPasswordReset from "./src/components/Popup/EnterPasswordReset";
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -20,6 +21,10 @@ export default function App() {
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="PersonalInfo" component={PersonalInfo} />
         <Stack.Screen name="Userpage" component={UserpageScreen} />
+        <Stack.Screen
+          name="EnterPasswordReset"
+          component={EnterPasswordReset}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

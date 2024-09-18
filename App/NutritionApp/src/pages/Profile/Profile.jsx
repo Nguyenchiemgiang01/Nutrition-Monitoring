@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import config from '../../../config';
 import ChangeInfoPopup from '../_Common/ChangeInfoPopup';
 import GenderPopup from '../_Common/GenderPopup';
+import { Picker } from '@react-native-picker/picker';
 const Profile = () => {
     const route = useRoute()
     const { userinfo } = route.params;
@@ -22,6 +23,50 @@ const Profile = () => {
     const [Gender, setGender] = useState(userinfo.personal_info.gender)
     const [Disease, setDisease] = useState(userinfo.personal_info.disease)
     const [calories, setCalories] = useState(userinfo.personal_info.caloriesgoal)
+
+    const diseasesss = [
+        "Coeliac disease",
+        "Hypothyroidism",
+        "Hyperthyroidism",
+        "Diabetes insipidus",
+        "Frozen Shoulder",
+        "Trigger Finger",
+        "Haemochromatosis",
+        "Acute Pancreatitis",
+        "Chronic Pancreatitis",
+        "Nausea and vomiting",
+        "Migraine",
+        "Mononucleosis",
+        "Stomach aches",
+        "Conjunctivitis",
+        "Dry Mouth",
+        "Acne",
+        "Malnutrition",
+        "Diabetes",
+        "Kidney Infection",
+        "Obstructive Sleep Apnea",
+        "Thyroid",
+        "Scleroderma",
+        "Acromegaly",
+        "Phoechromocytoma",
+        "Lupus",
+        "Cushing Syndrome",
+        "Hypertension",
+        "Type 2 Diabetes",
+        "High blood pressure",
+        "Heart Disease",
+        "Stroke",
+        "Sleep apnea",
+        "Metabolic syndrome",
+        "Fatty liver disease",
+        "Osteoarthritis",
+        "Gallbladder diseases",
+        "Kidney Diseases",
+        "Measles",
+        "Mouth Ulcer",
+        "Sore Throat",
+        "Yellow Fever"
+    ];
     const handleSaveAge = (newage) => {
         setAge(newage)
     };
@@ -112,17 +157,19 @@ const Profile = () => {
                     title="Gender"
                     initialValue={Gender}
                 />
-                <TouchableOpacity style={styles.change} onPress={() => setIsPopupDisease(true)}>
-                    <DetailMoreItem optionName={"Disease"} value={Disease}></DetailMoreItem>
-                </TouchableOpacity>
-                <ChangeInfoPopup
-                    visible={isPopupDisease}
-                    onClose={() => setIsPopupDisease(false)}
-                    onSave={handleSaveDisease}
-                    title="Disease"
-                    initialValue={Disease}
-                />
 
+                <View style={styles.disease}>
+                    <Text style={styles.textdisease}>Disease</Text>
+                    <Picker style={styles.picker}
+                        selectedValue={Disease}
+                        onValueChange={(itemValue) => setDisease(itemValue)}
+                    >
+                        <Picker.Item key={-1} label="No disease" value="" />
+                        {diseasesss.map((disease, index) => (
+                            <Picker.Item key={index} label={disease} value={disease} />
+                        ))}
+                    </Picker>
+                </View>
             </View>
 
 
@@ -159,6 +206,23 @@ const styles = StyleSheet.create({
         backgroundColor: '#006666',
         borderRadius: 10,
         fontStyle: 'italic'
+    },
+    disease: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#fff',
+        paddingLeft: 30
+
+    },
+    picker: {
+        width: 180,
+        fontSize: 18,
+        color: '#00994C'
+    },
+    textdisease: {
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 
 

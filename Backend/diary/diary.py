@@ -1,5 +1,5 @@
 from models import Consume, MealDiary, FoodInMeal, Food, DoExercise, Exercise
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, desc
 
 
 def get_meal_diary(UserIds, date):
@@ -77,9 +77,13 @@ def get_all_consume(UserId):
 
 def get_stage_consume(UserId, datefrom, dateto):
     print(datefrom)
-    consumes = Consume.query.filter(
-        and_(Consume.UserId == UserId, Consume.Date.between(datefrom, dateto))
-    ).all()
+    consumes = (
+        Consume.query.filter(
+            and_(Consume.UserId == UserId, Consume.Date.between(datefrom, dateto))
+        )
+        .order_by(desc(Consume.Date))
+        .all()
+    )
 
     return consumes
 

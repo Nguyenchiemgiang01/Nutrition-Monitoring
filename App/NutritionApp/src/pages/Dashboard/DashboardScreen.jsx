@@ -125,7 +125,7 @@ export default function DashboardScreen() {
                             <Measure name="Sex" value={gender} unit="   " />
                             <Measure name="Weight" value={weight} unit=" kg" />
                             <Measure name="Height" value={height} unit="cm" />
-                            <Measure name="Body Mass Index (BMI)" value={(parseFloat(weight) / parseFloat(height) / parseFloat(height) * 10000).toFixed(1)} unit=" % " />
+                            <Measure name="Body Mass Index (BMI)" value={(parseFloat(weight) / parseFloat(height) / parseFloat(height) * 10000).toFixed(1)} unit=" " />
                             <Measure name="Body Fat" value={getBMICategory((parseFloat(weight) / parseFloat(height) / parseFloat(height) * 10000).toFixed(1))} unit=" " />
 
                         </View>

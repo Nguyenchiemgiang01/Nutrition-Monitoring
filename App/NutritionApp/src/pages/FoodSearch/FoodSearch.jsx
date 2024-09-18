@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native'
 import HeaderSearch from '../../components/HeaderSearch';
 import { useNavigation } from '@react-navigation/native';
-import { FoodItem } from '../../components/FoodItem'
 import { useRoute } from '@react-navigation/native';
 export default FoodSearch = () => {
     const navigation = useNavigation()
     const [searchResults, setSearchResults] = useState();
     const route = useRoute();
     const { selecteddate, iscreatemeal } = route.params;
-    const date = selecteddate
+    let date = selecteddate
+    console.log("datesearch", date)
     const handleSearch = (results) => {
         setSearchResults(results)
 

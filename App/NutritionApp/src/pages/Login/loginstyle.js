@@ -107,6 +107,11 @@ const style = {
     color: "#009999",
     fontWeight: 700,
   },
+  textforget: {
+    fontSize: 18,
+    color: "#009999",
+    fontWeight: 700,
+  },
   error: {
     width: "100%",
     alignItems: "top",

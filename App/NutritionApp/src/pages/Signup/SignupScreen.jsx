@@ -59,7 +59,6 @@ const Sign = () => {
     }
     if (confirmpassword != password) {
       setconfirmPasswordError(validate.IN_CONFIRM_PASSWORD);
-
       return;
     } else {
       setconfirmPasswordError('');

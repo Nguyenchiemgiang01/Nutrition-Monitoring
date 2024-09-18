@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const FoodItem = ({ items, status, iscreatemeal, date, group }) => {
     const navigation = useNavigation()
-    console.log("iscreatemeal", iscreatemeal, status, group)
     const navtodetail = (food) => {
         navigation.navigate('FoodDetail', { food, status, iscreatemeal, date, group })
     }

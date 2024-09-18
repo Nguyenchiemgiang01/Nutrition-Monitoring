@@ -1,10 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, flash, render_template, redirect
 from datetime import datetime, timedelta
 import uuid
 import time
 import pandas as pd
 import numpy as np
 from libreco.data import DataInfo
+from email.message import EmailMessage
 from libreco.algorithms import NCF
 from flask_jwt_extended import (
     create_access_token,
@@ -32,11 +33,26 @@ from food.food import *
 from diary.diary import *
 from sqlalchemy import desc
 from flask_cors import CORS
+from flask_mail import Mail, Message
 from config import *
 from jwts.refresh_jwts import refresh_jwts
+import smtplib
+import getpass
+import random
+
 
 sqlstring = SQL_STRING
 app = Flask(__name__)
+app.config["MAIL_SERVER"] = SMTP
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USE_SSL"] = False
+app.config["MAIL_USERNAME"] = EMAIL_ADDRESS
+app.config["MAIL_PASSWORD"] = PASSWORD_MAIL
+app.config["MAIL_DEFAULT_SENDER"] = EMAIL_ADDRESS
+
+mail = Mail(app)
+
 app.config["JWT_SECRET_KEY"] = "python"
 app.config["SQLALCHEMY_DATABASE_URI"] = sqlstring
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -59,7 +75,6 @@ model = NCF.load(
 dataset = pd.read_csv("./common/recipes.csv")
 df_diseases = pd.read_csv("./common/final_diseases.csv")
 time.sleep(2)
-print("df_diseases", df_diseases.head(5))
 values = [
     "Name",
     "RecipeId",
@@ -82,9 +97,75 @@ def parse_date(date_str):
         return None
 
 
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+
+otp_storage = {}
+
+
 @app.after_request
 def refresh_expiring_jwts(response):
     return refresh_jwts(response)
+
+
+@app.route("/generate-otp", methods=["POST"])
+def get_otp():
+    if request.method == "POST":
+        email = request.json.get("email", None)
+        user = User.query.filter_by(Email=email).first()
+        if user:
+            otp = generate_otp()
+            timestamp = time.time()
+            otp_storage["otp"] = otp
+            otp_storage["timestamp"] = timestamp
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            from_mail = "thanhhoang15032002@gmail.com"
+            server.login(from_mail, "rbjs mfrr omqu xkmh")
+            msg = EmailMessage()
+            msg["Subject"] = "OTP Verification"
+            msg["From"] = from_mail
+            msg["To"] = email
+            msg.set_content("Your OTP is:" + str(otp))
+            server.send_message(msg)
+            server.quit()
+
+            return jsonify({"sucess": "sucess"}), 200
+        else:
+            return jsonify({"error", "email no match"}), 500
+
+
+@app.route("/validate-otp", methods=["POST"])
+def validate_otp():
+    data = request.json
+    user_otp = data.get("otp")
+    current_time = time.time()
+
+    if "otp" not in otp_storage or "timestamp" not in otp_storage:
+        return jsonify({"status": "failure", "message": "OTP not generated"}), 400
+
+    if current_time - otp_storage["timestamp"] > 60:
+        return jsonify({"status": "failure", "message": "OTP expired"}), 400
+
+    if otp_storage["otp"] == user_otp:
+        return jsonify({"status": "success", "message": "OTP verified"}), 200
+    else:
+        return jsonify({"status": "failure", "message": "Invalid OTP"}), 400
+
+
+@app.route("/reset-new-password", methods=["GET", "POST"])
+def reset_new_password():
+    if request.method == "POST":
+        email = request.json.get("email", None)
+        password = request.json.get("password", None)
+        user = User.query.filter_by(Email=email).first()
+        if user:
+            user.Password = password
+            db.session.commit()
+            return jsonify({"sucess": "sucess"}), 200
+        else:
+            return jsonify({"error", "email no match"}), 500
 
 
 @app.route("/login", methods=["POST"])
@@ -149,6 +230,10 @@ def signup():
             Weight=weight,
             Gender=gender,
             Disease=disease,
+            CaloriesGoal=10 * float(weight)
+            + 6.25 * float(height)
+            - 5 * float(age)
+            + float(5 if gender == "Male" else -161),
         )
         if new_user:
             db.session.add(new_user)
@@ -205,7 +290,8 @@ def update_persional():
     personal_info.Weight = data["Weight"]
     personal_info.Gender = data["Gender"]
     personal_info.Disease = data["Disease"]
-    personal_info.Disease = data["CaloriesGoal"]
+    personal_info.CaloriesGoal = data["CaloriesGoal"]
+    print("info.get", data["CaloriesGoal"])
 
     try:
         db.session.commit()
@@ -220,7 +306,6 @@ def update_persional():
 def get_user_profile():
     email = get_jwt_identity()
     user = User.query.filter_by(Email=email).first()
-    print(user.UserId)
     if request.method == "GET":
         if user is None:
             return (
@@ -228,7 +313,7 @@ def get_user_profile():
                 404,
             )
         personal_info = PersonalInformation.query.filter_by(UserId=user.UserId).first()
-        print(personal_info)
+
         if personal_info is None:
             return jsonify({"error": PER_INFOR_NOTFOULD}), 404
         profile_data = {
@@ -255,7 +340,6 @@ def get_user_profile():
             personal_info = PersonalInformation.query.filter_by(
                 UserId=user.UserId
             ).first()
-
             if personal_info is None:
                 personal_info = PersonalInformation(
                     UserId=user.UserId,
@@ -278,6 +362,7 @@ def get_user_profile():
                 db.session.commit()
 
         else:
+            print("info.get", info.get("CaloriesGoal"))
             personal_info = PersonalInformation(
                 UserId=info.get("userid"),
                 Age=info.get("age"),
@@ -298,7 +383,6 @@ def search():
         results = Food.query.filter(Food.Name.ilike(f"%{foodname}%")).limit(50).all()
 
         ress = jsonify([food.to_dict() for food in results])
-        print(food.to_dict() for food in results)
         return ress
     return jsonify([]), 200
 
@@ -314,7 +398,6 @@ def exercisearch():
         )
 
         ress = jsonify([exercise.to_dict() for exercise in results])
-        print(ress)
         return ress
     return jsonify([]), 200
 
@@ -378,7 +461,6 @@ def getrecipe():
     user = User.query.filter_by(Email=email).first()
     foodid = request.json.get("foodid", None)
     food = Food.query.filter_by(FoodId=foodid).first()
-    print(foodid)
     if food is not None:
         if request.method == "GET":
             recipe = getrecipefood(foodid).to_dict()
@@ -503,6 +585,7 @@ def updateconsume(date):
 @jwt_required()
 def query_consume(date):
     query_date = parse_date(date)
+    print("query", query_date)
     email = get_jwt_identity()
     user = User.query.filter_by(Email=email).first()
     if not query_date:
@@ -511,6 +594,7 @@ def query_consume(date):
             400,
         )
     a_consume = get_a_consume(user.UserId, query_date)
+    print("a_consume", a_consume)
     if not a_consume:
         return jsonify({"message": "No records found"}), 404
 
@@ -533,7 +617,6 @@ def consume():
 @jwt_required()
 def query_consume_by_date_range():
     date_from = request.args.get("date_from", None)
-    print("datefrom", date_from)
     date_to = request.args.get("date_to", None)
 
     email = get_jwt_identity()
@@ -546,7 +629,6 @@ def query_consume_by_date_range():
     if not (date_from and date_to):
         return jsonify({"error": "INVALID_DATE_FORMAT"}), 400
     if date_from == date_to:
-        print("1 day")
         consume_list = get_a_consume(user.UserId, date_from).to_dict()
         return jsonify(consume_list), 200
     else:
@@ -597,7 +679,6 @@ def get_exercise_date(date):
         return jsonify({"error": "INVALID_DATE_FORMAT"}), 400
 
     exercises = get_exercise(user.UserId, query_date)
-    print(exercises)
     if not exercises:
         return jsonify({"exercises": []}), 404
     else:
@@ -610,8 +691,10 @@ def create_meal_diary():
     email = get_jwt_identity()
     user = User.query.filter_by(Email=email).first()
     date = request.json.get("Date", None)
+    print("date_add", date)
     meal_type = request.json.get("Type", None)
     food_id = request.json.get("foodid", None)
+    print("food_id_add", food_id)
     if not (date and meal_type):
         return jsonify({"error": "Missing required data"}), 400
     consume_id = get_consume_id(user.UserId, date)
@@ -654,7 +737,6 @@ def remove_meal_diary():
     date = request.json.get("Date", None)
     meal_type = request.json.get("Type", None)
     food_id = request.json.get("foodid", None)
-    print("inf", date, meal_type, food_id)
     if not (date and meal_type and food_id):
         return jsonify({"error": "Missing required data"}), 400
 
@@ -747,7 +829,7 @@ def recommend():
         "height": per_infor["Height"],
         "weight": per_infor["Weight"],
         "gender": per_infor["Gender"],
-        "name_diseases": per_infor["Disease"],  # lưu ý trường hợp trống
+        "name_diseases": per_infor["Disease"],
     }
     number_meal = request.json.get("number_meal", None)
     isDiet = request.json.get("is_diet", None)
@@ -760,7 +842,7 @@ def recommend():
             return jsonify({"recommend_result": recommend_result}), 201
         else:
             return jsonify({"recommend_result": None}), 201
-        # kết hợp  với NFC
+
     else:
         recommend_result = None
         result = model.recommend_user(user=user.UserId, n_rec=10)
@@ -845,10 +927,8 @@ def get_food_meal():
     email = get_jwt_identity()
     user = User.query.filter_by(Email=email).first()
     permealid = request.args.get("permealid", None)
-    print(permealid)
     per_meal = FoodInPerMeal.query.filter_by(PerMealId=permealid).all()
     perfoodmeal = [item.to_dict() for item in per_meal]
-    print(perfoodmeal)
     return jsonify({"perfoodmeal": perfoodmeal}), 201
 
 
